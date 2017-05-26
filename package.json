@@ -4,7 +4,9 @@
     "description": "",
     "main": "script.js",
     "scripts": {
-        "magicScript": "node convertToJson.js && node transferFathers.js && node transferChildren.js"
+        "convert": "node convertToJson.js",
+        "basic": "node transferFathers.js",
+        "secondary": "node transferChildren.js"
     },
     "author": "Megaklis Vasilakis",
     "license": "ISC",

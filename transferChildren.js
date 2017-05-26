@@ -14,24 +14,22 @@ mongoose.connect(db, (err) => {
 });
 
 function iteration(json) {
-    console.log('Begining Children iteration. Length: ' + json.length)
+    console.log('Begining iteration. Length: ' + json.length)
     json.forEach(function(product, i) {
         if (product.father === "2") {
             const productToSave = makeProduct(product)
-            addChildProduct(productToSave)
+            addChildProduct(productToSave, i)
         }
     }, this);
-    console.log("Fathers iteration finished.")
-    process.exit() // Exit when array comes to a finish
 }
 
-function addChildProduct(newProduct) {
+function addChildProduct(newProduct, i) {
     const skuPart = newProduct.sku.substring(0, 7)
     const regex = new RegExp(skuPart, 'i')
     Product.findOneAndUpdate({ sku: regex }, { $push: { children: newProduct } },
         (err) => {
             if (err) return console.log(err)
-            return console.log("New Product child Created. SKU: " + newProduct.sku)
+            return console.log("New Product child Created. Iteration: " + i)
         })
 }
 
