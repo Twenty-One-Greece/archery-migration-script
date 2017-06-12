@@ -7,6 +7,17 @@ const async = require('async-kit')
 // Read Json file
 const json = JSON.parse(fs.readFileSync('output.json', 'utf8'));
 
+var images
+
+fs.readdir('fotoarchery', (err, files) => {
+    if (err) console.log(err)
+    images = files
+})
+
+
+setTimeout(() => console.log(images), 1000)
+
+
 // Connect to db
 const db = 'mongodb://localhost/nextcommerce'
 mongoose.connect(db, (err) => {
@@ -17,7 +28,7 @@ mongoose.connect(db, (err) => {
 // Loop thgrough Json
 function iteration(json) {
     console.log('Begining iteration. Length: ' + json.length)
-    json.forEach(function(product, i) {
+    json.forEach(function (product, i) {
         const productToSave = makeProduct(product) // Make product info
         if (product.father === "1") { // Save it if its is a "father product"
             var newProduct = new Product(productToSave) // Make new product model
@@ -29,15 +40,28 @@ function iteration(json) {
 function saveNewProduct(product, i) {
     product.save((err) => {
         if (err) return console.log(err)
-        return console.log("New Product Created. Iteration: " + i)
+        // return console.log("New Product Created. Iteration: " + i)
     })
+}
+
+function getProductsImages(product) {
+    var prodImages = []
+    images.forEach((image) => {
+        let fileName = product.fileName
+        let imageName = image.slice(0, 6)
+        if (fileName === imageName && product.father) prodImages.push(image)
+        // if (product.sku.includes(image.slice(0, 8))) console.log(product.sku)
+    })
+    return prodImages
 }
 
 function makeProduct(product) {
     return productForDb = {
+        father: product.father,
         name: product.name,
+        images: getProductsImages(product),
         slug: makeSlug(product.name),
-        featuredImage: product.fileName,
+        featuredImage: product.fileName + ".jpg",
         seoKeywords: product.name,
         seoDescription: product.name,
         seoTitle: product.name,
